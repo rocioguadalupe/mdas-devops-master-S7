@@ -1,24 +1,15 @@
-# MDAS Devops tools: Scripting, Pipelines,  Docker, Kubernetes
+# Ejercicio 4: Kubernetes
 
-## **Cross Platform Setup (Windows, Mac or Linux)**
+El objetivo es extender la pipeline actual para desplegar la aplicación **votingapp** y ejecutar sus test de integración tests en `kubernetes`.
 
-### Download and install
+A parte del script de la pipeline, la solución debe contener los siguientes recursos de la **API** de `kubernetes` en formato `yaml`:
 
-* [Visual Studio Code](https://code.visualstudio.com/download)
-  * Plugins: Go, Python, Docker
-* [Git](https://git-scm.com/downloads)
-* [Docker](https://www.docker.com/products/docker-desktop)
-* [Golang](https://golang.org/dl/)
-* [Python](https://www.python.org/downloads/)
-* [jq](https://stedolan.github.io/jq/download/)
-* [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
+* `Deployment` para la aplicación votingapp con 2 réplicas.
+* `Service` de tipo `clusterIP` para la aplicación votingapp.
+* `Deployment` para la base de datos redis con 1 réplica.
+* `Service` de tipo `clusterIP` para la base de datos redis.
+* `ConfigMap` usando la configuración proporcionada en `./nginx/nginx.conf`.
+* `Deployment` para **nginx** montando un volumen que lea del `configMap` creado en el punto anterior.
+* `Service` de tipo `NodePort` para acceder al **nginx** desde el exterior.
 
-### Signup for
-
-* [Dockerhub](https://hub.docker.com)
-* [Github](https://github.com)
-* [Azure Education](https://azureforeducation.microsoft.com/devtools)
-
-### Pull most popular images
-
-Pull docker images running the script `pull.sh`
+La entrega se realiza en el repo privado de github de cada estudiante.
