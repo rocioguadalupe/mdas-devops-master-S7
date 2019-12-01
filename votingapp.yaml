@@ -21,7 +21,7 @@ spec:
         app: myvotingapp
     spec:
       containers:
-      - image: rocioguadalupe/votingapp:0.2
+      - image: rocioguadalupe/votingapp:0.3
         name: myvotingapp
         env:
           - name: REDIS
@@ -58,7 +58,7 @@ metadata:
   namespace: votingapp
 spec:
   ports:
-  - nodePort: 30959
+  - nodePort: 31717
     port: 80
     targetPort: 80
   selector:
