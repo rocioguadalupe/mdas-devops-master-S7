@@ -21,7 +21,7 @@ spec:
         app: myvotingapp
     spec:
       containers:
-      - image: rocioguadalupe/votingapp:0.3
+      - image: rocioguadalupe/votingapp:0.4
         name: myvotingapp
         env:
           - name: REDIS
@@ -58,9 +58,83 @@ metadata:
   namespace: votingapp
 spec:
   ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: myvotingapp
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: mynginx
+  name: mynginx
+  namespace: votingapp
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mynginx
+    spec:
+      containers:
+      - image: nginx
+        name: mynginx
+        volumeMounts:
+        - name: nginx-volume
+          mountPath: /usr/local/nginx/conf/nginx.conf
+      volumes:
+      - name: nginx-volume
+        configMap:
+          name: nginx-conf
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+  namespace: votingapp
+data:
+  nginx.conf: |
+    events { worker_connections 1024; }
+
+    http {
+        include /etc/nginx/mime.types;
+
+        upstream voting{
+            server myvotingapp;
+        }
+
+        server {
+            listen 80;
+
+            location / {
+                proxy_pass         http://voting/;
+                proxy_redirect     off;
+                proxy_set_header   Host $host;
+                proxy_set_header   X-Real-IP $remote_addr;
+                proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header   X-Forwarded-Host $server_name;
+            }
+
+            location /ws {
+                proxy_pass http://voting/ws;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "Upgrade";
+            }
+        }
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mynginx
+  namespace: votingapp
+spec:
+  ports:
   - nodePort: 31717
     port: 80
     targetPort: 80
   selector:
-    app: myvotingapp
+    app: mynginx
   type: NodePort
